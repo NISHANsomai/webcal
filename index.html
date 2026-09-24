@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daily Points Calculator — Animated</title>
+<style>
+*{box-sizing:border-box}
+:root{
+ --bg:#070707;--panel:#11110f;--panel2:#171714;--line:#30302a;
+ --text:#f4f1e8;--muted:#8f8d82;
+ --lime:#d7ff3f;--lime2:#a9e900;--orange:#ff9f43;
+ --green:#65e6a3;--red:#ff6b6b;--shadow:rgba(0,0,0,.55);
+}
+html{scroll-behavior:smooth}
+body{
+ margin:0;min-height:100vh;color:var(--text);font-family:Inter,Arial,sans-serif;
+ background:
+ radial-gradient(900px 500px at 50% -180px,rgba(215,255,63,.11),transparent 68%),
+ radial-gradient(600px 500px at -10% 55%,rgba(255,159,67,.055),transparent 65%),
+ radial-gradient(700px 500px at 110% 70%,rgba(215,255,63,.05),transparent 65%),
+ #070707;
+ overflow-x:hidden;
+}
+body:before{
+ content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.12;
+ background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+ linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+ background-size:44px 44px;
+ mask-image:linear-gradient(to bottom,black,transparent 85%);
+ animation:gridDrift 22s linear infinite;
+}
+body:after{
+ content:"";position:fixed;inset:-30%;pointer-events:none;z-index:-2;
+ background:conic-gradient(from 0deg at 50% 50%,transparent 0deg,rgba(215,255,63,.025) 35deg,transparent 80deg,rgba(255,159,67,.018) 150deg,transparent 210deg,rgba(215,255,63,.025) 280deg,transparent 360deg);
+ animation:slowSpin 28s linear infinite;
+}
+@keyframes gridDrift{to{background-position:44px 44px}}
+@keyframes slowSpin{to{transform:rotate(360deg)}}
+
+.wrap{max-width:1120px;margin:auto;padding:28px 16px 58px}
+.hero{text-align:center;margin:4px 0 32px;animation:heroDrop .9s cubic-bezier(.12,.8,.2,1)}
+.badge{
+ display:inline-flex;align-items:center;gap:9px;padding:8px 13px;border:1px solid rgba(215,255,63,.28);
+ border-radius:99px;background:rgba(215,255,63,.045);color:var(--lime);
+ font:600 10px monospace;letter-spacing:.16em;box-shadow:0 0 30px rgba(215,255,63,.045)
+}
+.badge b{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime);animation:statusPulse 1.1s ease-in-out infinite}
+h1{
+ margin:16px 0 9px;font-size:clamp(40px,7vw,72px);line-height:.9;letter-spacing:-.07em;
+ color:var(--text);position:relative;
+ text-shadow:0 0 35px rgba(215,255,63,.06);
+}
+h1:after{
+ content:"";position:absolute;height:2px;width:75px;left:50%;bottom:-12px;transform:translateX(-50%);
+ background:linear-gradient(90deg,transparent,var(--lime),transparent);box-shadow:0 0 18px var(--lime);
+ animation:linePulse 2.2s ease-in-out infinite;
+}
+.sub{color:var(--muted);font-size:13px;margin-top:24px}
+@keyframes heroDrop{from{opacity:0;transform:translateY(-35px) scale(.96);filter:blur(7px)}to{opacity:1;transform:none;filter:none}}
+@keyframes statusPulse{50%{transform:scale(1.8);opacity:.4}}
+@keyframes linePulse{50%{width:150px;opacity:.45}}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.full{grid-column:1/-1}
+.grid > .card:nth-child(2){grid-column:1/-1}
+
+.card{
+ position:relative;padding:20px;border:1px solid var(--line);border-radius:18px;
+ background:linear-gradient(145deg,rgba(20,20,17,.94),rgba(11,11,10,.96));
+ box-shadow:0 22px 65px var(--shadow),inset 0 1px rgba(255,255,255,.055);
+ overflow:hidden;isolation:isolate;
+ animation:cardRise .8s cubic-bezier(.12,.8,.2,1) both;
+ transition:transform .45s cubic-bezier(.12,.8,.2,1),border-color .35s,box-shadow .45s;
+}
+.card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.16s}.card:nth-child(4){animation-delay:.24s}.card:nth-child(5){animation-delay:.32s}
+.card:before{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(105deg,transparent 0%,rgba(215,255,63,.045) 42%,transparent 52%);
+ transform:translateX(-130%);animation:cardSweep 6s cubic-bezier(.4,0,.2,1) infinite;
+}
+.card:after{
+ content:"";position:absolute;left:-70px;top:-70px;width:140px;height:140px;border-radius:50%;
+ background:radial-gradient(circle,rgba(215,255,63,.10),transparent 68%);
+ filter:blur(8px);pointer-events:none;animation:cardGlow 5s ease-in-out infinite;
+}
+.card:hover{
+ transform:translateY(-7px);
+ border-color:rgba(215,255,63,.28);
+ box-shadow:0 28px 80px rgba(0,0,0,.65),0 0 38px rgba(215,255,63,.055),inset 0 1px rgba(255,255,255,.08)
+}
+@keyframes cardRise{from{opacity:0;transform:translateY(32px);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+@keyframes cardSweep{0%,48%{transform:translateX(-130%)}68%,100%{transform:translateX(140%)}}
+@keyframes cardGlow{50%{transform:translate(580px,250px);opacity:.2}}
+
+.title{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.title h2{margin:0;font-size:15px;letter-spacing:-.01em}
+.label{font:600 10px monospace;letter-spacing:.13em;color:var(--muted);text-transform:uppercase}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{
+ position:relative;padding:16px;border:1px solid var(--line);border-radius:14px;background:rgba(0,0,0,.24);
+ overflow:hidden;transition:.35s cubic-bezier(.12,.8,.2,1)
+}
+.stat:before{
+ content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;
+ background:linear-gradient(90deg,transparent,var(--lime),transparent);transform:scaleX(.15);
+ transition:.35s;
+}
+.stat:hover{transform:translateY(-5px);border-color:#48483d;background:rgba(215,255,63,.025)}
+.stat:hover:before{transform:scaleX(1);box-shadow:0 0 12px var(--lime)}
+.value{font:500 clamp(21px,3vw,31px) monospace;margin-top:8px}
+.greenText{color:var(--green);text-shadow:0 0 18px rgba(101,230,163,.16)}
+.redText{color:var(--red);text-shadow:0 0 18px rgba(255,107,107,.15)}
+.limeText{color:var(--lime);text-shadow:0 0 18px rgba(215,255,63,.18)}
+
+.result{
+ margin-top:13px;padding:16px;text-align:center;border-radius:13px;
+ background:rgba(215,255,63,.025);border:1px solid rgba(215,255,63,.12);
+ position:relative;overflow:hidden;
+}
+.result:after{
+ content:"";position:absolute;left:-25%;top:0;width:22%;height:100%;
+ background:linear-gradient(90deg,transparent,rgba(215,255,63,.12),transparent);
+ transform:skewX(-18deg);animation:resultSweep 3.8s ease-in-out infinite;
+}
+.result-value{font:500 29px monospace;margin-top:5px;color:var(--lime);text-shadow:0 0 24px rgba(215,255,63,.18)}
+@keyframes resultSweep{0%,62%{left:-25%}100%{left:120%}}
+
+.inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input{
+ width:100%;padding:13px 14px;border-radius:11px;border:1px solid var(--line);
+ background:#0a0a09;color:var(--text);outline:none;font:500 14px monospace;
+ transition:.3s cubic-bezier(.12,.8,.2,1);
+}
+input:hover{border-color:#45453b}
+input:focus{
+ border-color:rgba(215,255,63,.58);transform:translateY(-2px);
+ box-shadow:0 0 0 3px rgba(215,255,63,.055),0 10px 28px rgba(0,0,0,.35)
+}
+.btns{display:flex;flex-wrap:wrap;gap:9px;margin-top:10px}
+button{
+ position:relative;overflow:hidden;border:1px solid transparent;border-radius:10px;padding:12px 15px;
+ color:#111;font:800 11px Inter;cursor:pointer;background:var(--lime);
+ box-shadow:0 8px 25px rgba(215,255,63,.13);transition:.25s cubic-bezier(.12,.8,.2,1)
+}
+button:before{
+ content:"";position:absolute;top:-80%;left:-45%;width:28%;height:260%;
+ background:rgba(255,255,255,.48);transform:rotate(22deg);transition:.55s
+}
+button:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(215,255,63,.2)}
+button:hover:before{left:125%}
+button:active{transform:translateY(1px) scale(.97)}
+.greenBtn{background:var(--green);box-shadow:0 8px 25px rgba(101,230,163,.12)}
+.redBtn{background:var(--red);box-shadow:0 8px 25px rgba(255,107,107,.12)}
+.yellowBtn{background:var(--orange);box-shadow:0 8px 25px rgba(255,159,67,.12)}
+.darkBtn{background:#181815;color:var(--text);border-color:#323229;box-shadow:none}
+.purpleBtn{background:var(--lime);box-shadow:0 8px 25px rgba(215,255,63,.13)}
+
+.bump{animation:impact .48s cubic-bezier(.12,.8,.2,1)}
+.flash{animation:resultImpact .62s cubic-bezier(.12,.8,.2,1)}
+@keyframes impact{
+ 0%{transform:scale(1)}30%{transform:scale(1.22);filter:brightness(1.3)}55%{transform:scale(.94)}100%{transform:scale(1)}
+}
+@keyframes resultImpact{
+ 0%{opacity:.1;transform:scale(.65);filter:blur(7px)}
+ 38%{opacity:1;transform:scale(1.17);filter:none}
+ 62%{transform:scale(.96)}
+ 100%{transform:scale(1)}
+}
+
+.combined{
+ padding:17px;border-radius:15px;margin-bottom:11px;background:#10100e;
+ border:1px solid #333329;position:relative;overflow:hidden;
+}
+.combined:before{
+ content:"";position:absolute;top:0;left:-40%;width:35%;height:1px;
+ background:linear-gradient(90deg,transparent,var(--lime),transparent);
+ animation:historyLine 4s linear infinite;
+}
+@keyframes historyLine{to{left:130%}}
+.combinedGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:11px}
+.cbox{padding:12px;border:1px solid var(--line);border-radius:11px;background:#0a0a09;transition:.3s}
+.cbox:hover{transform:translateY(-3px);border-color:#45453b}
+.cbox strong{display:block;margin-top:5px;font:500 20px monospace}
+
+.historyList{display:grid;gap:9px}
+.historyRow{
+ display:grid;grid-template-columns:1.2fr repeat(4,1fr) auto;gap:10px;align-items:center;
+ padding:13px;border:1px solid var(--line);border-radius:12px;background:#0b0b0a;
+ animation:rowReveal .55s cubic-bezier(.12,.8,.2,1) both;transition:.3s
+}
+.historyRow:hover{transform:translateX(6px);border-color:#46463b;background:#10100d}
+@keyframes rowReveal{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+.empty{text-align:center;color:var(--muted);padding:27px;border:1px dashed #333329;border-radius:12px}
+.bottom{display:flex;justify-content:center;gap:10px;margin-top:16px}
+
+.toast{
+ position:fixed;left:50%;bottom:24px;z-index:20;padding:12px 18px;border-radius:9px;
+ background:#11110f;border:1px solid rgba(215,255,63,.28);color:var(--lime);
+ font:700 11px monospace;box-shadow:0 15px 45px #000;
+ opacity:0;transform:translate(-50%,25px);pointer-events:none;transition:.35s cubic-bezier(.12,.8,.2,1)
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:780px){
+ .grid{grid-template-columns:1fr}.full{grid-column:auto}.grid > .card:nth-child(2){grid-column:auto}
+ .stats{grid-template-columns:1fr 1fr}.combinedGrid{grid-template-columns:1fr 1fr}.historyRow{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){.inputs{grid-template-columns:1fr}.card{padding:15px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+
+<div class="wrap">
+<header class="hero">
+ <div class="badge"><b></b> DAILY POINTS SYSTEM</div>
+ <h1>Points Calculator</h1>
+ <div class="sub">A live dashboard for victories, defeats and daily progress.</div>
+</header>
+
+<div class="grid">
+<section class="card full">
+ <div class="title"><h2>Point Overview</h2><span class="label">Live balance</span></div>
+ <div class="stats">
+  <div class="stat"><span class="label">Starting Point</span><div class="value" id="startingDisplay">0</div></div>
+  <div class="stat"><span class="label">Total Points</span><div class="value cyanText" id="totalDisplay">0</div></div>
+  <div class="stat"><span class="label">Total Profit Point</span><div class="value greenText" id="profitDisplay">0</div></div>
+  <div class="stat"><span class="label">Total Loss Point</span><div class="value redText" id="lossDisplay">0</div></div>
+ </div>
+ <div class="result"><div class="label">Profit / Loss Percentage</div><div class="result-value" id="percentageDisplay">0%</div></div>
+</section>
+
+<section class="card">
+ <div class="title"><h2>Starting Point</h2><span class="label">Baseline</span></div>
+ <input id="startingPoint" type="number" placeholder="Enter starting point">
+ <div class="btns"><button onclick="setStartingPoint()">Set Starting Point</button><button class="darkBtn" onclick="resetTotal()">Reset Total</button></div>
+</section>
+
+<section class="card">
+ <div class="title"><h2>Victory</h2><span class="label">Gain</span></div>
+ <div class="inputs"><input id="number1" type="number" placeholder="First number"><input id="number2" type="number" placeholder="Second number"></div>
+ <div class="btns"><button onclick="calculateVictory()">Calculate</button><button class="greenBtn" onclick="addVictory()">Add Victory Points</button></div>
+ <div class="result"><div class="label">Winning Points</div><div class="result-value" id="victoryOutput">—</div></div>
+</section>
+
+<section class="card">
+ <div class="title"><h2>Defeat</h2><span class="label">Loss</span></div>
+ <input id="defeatNumber" type="number" placeholder="Enter defeat points">
+ <div class="btns"><button class="redBtn" onclick="calculateDefeat()">Calculate</button><button class="yellowBtn" onclick="subtractDefeat()">Subtract Input from Total</button></div>
+ <div class="result"><div class="label">50% Result</div><div class="result-value" id="defeatOutput">—</div></div>
+</section>
+
+<section class="card full">
+ <div class="title"><h2>Daily History</h2><span class="label">Combined result</span></div>
+ <div class="combined">
+  <span class="label">All Completed Days</span>
+  <div class="combinedGrid">
+   <div class="cbox"><span class="label">Total Profit</span><strong class="greenText" id="combinedProfit">0</strong></div>
+   <div class="cbox"><span class="label">Total Loss</span><strong class="redText" id="combinedLoss">0</strong></div>
+   <div class="cbox"><span class="label">Net Result</span><strong id="combinedNet">0</strong></div>
+   <div class="cbox"><span class="label">Result %</span><strong class="cyanText" id="combinedPercent">0%</strong></div>
+  </div>
+ </div>
+ <div class="historyList" id="historyList"></div>
+ <div class="bottom"><button class="purpleBtn" onclick="changeDay()">Change Day</button><button class="darkBtn" onclick="clearHistory()">Clear Day History</button></div>
+</section>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+let total=0,victoryOutputValue=null,victoryTotalAdd=null,totalProfit=0,totalLoss=0;
+let history=JSON.parse(localStorage.getItem("pointsDailyHistory")||"[]");
+const KEY="pointsCurrentDay", $=id=>document.getElementById(id);
+const fmt=n=>Number.isInteger(Number(n))?String(Number(n)):Number(n).toFixed(2).replace(/\.?0+$/,"");
+
+function toast(t){let e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>e.classList.remove("show"),1800)}
+function saveHistory(){localStorage.setItem("pointsDailyHistory",JSON.stringify(history))}
+function saveCurrent(){
+ localStorage.setItem(KEY,JSON.stringify({total,totalProfit,totalLoss,startingPoint:$("startingPoint").value,
+ number1:$("number1").value,number2:$("number2").value,defeatNumber:$("defeatNumber").value,
+ victoryOutputValue,victoryTotalAdd,victoryOutput:$("victoryOutput").textContent,defeatOutput:$("defeatOutput").textContent}))
+}
+function bump(id){let e=$(id);e.classList.remove("bump");void e.offsetWidth;e.classList.add("bump")}
+function flash(id){let e=$(id);e.classList.remove("flash");void e.offsetWidth;e.classList.add("flash")}
+
+function update(){
+ let starting=parseFloat($("startingPoint").value);
+ $("startingDisplay").textContent=isNaN(starting) ? "0" : fmt(starting);
+ bump("startingDisplay");
+ $("totalDisplay").textContent=fmt(total);bump("totalDisplay");
+ $("profitDisplay").textContent=fmt(totalProfit);bump("profitDisplay");
+ $("lossDisplay").textContent=fmt(totalLoss);bump("lossDisplay");
+ let s=parseFloat($("startingPoint").value),pct=0;
+ if(!isNaN(s)&&s!==0)pct=((total-s)/Math.abs(s))*100;
+ $("percentageDisplay").textContent=fmt(pct)+"%";flash("percentageDisplay");saveCurrent();
+}
+function setStartingPoint(){
+ let v=parseFloat($("startingPoint").value);if(isNaN(v))return toast("ENTER A STARTING POINT");
+ total=v;totalProfit=0;totalLoss=0;update();toast("STARTING POINT SET");
+}
+function resetTotal(){total=0;totalProfit=0;totalLoss=0;update();toast("TOTAL RESET")}
+function calculateVictory(){
+ let a=parseFloat($("number1").value),b=parseFloat($("number2").value);
+ if(isNaN(a)||isNaN(b))return toast("ENTER BOTH NUMBERS");
+ let hi=Math.max(a,b),lo=Math.min(a,b);victoryTotalAdd=hi-lo;victoryOutputValue=victoryTotalAdd+lo*.40;
+ $("victoryOutput").textContent=fmt(victoryOutputValue);flash("victoryOutput");saveCurrent();
+}
+function addVictory(){
+ if(victoryTotalAdd===null)return toast("CALCULATE VICTORY FIRST");
+ total+=victoryTotalAdd;totalProfit+=victoryTotalAdd;update();toast("+"+fmt(victoryTotalAdd)+" VICTORY POINTS");victoryTotalAdd=null;saveCurrent();
+}
+function calculateDefeat(){
+ let v=parseFloat($("defeatNumber").value);if(isNaN(v))return toast("ENTER DEFEAT POINTS");
+ $("defeatOutput").textContent=fmt(v*.5);flash("defeatOutput");saveCurrent();
+}
+function subtractDefeat(){
+ let v=parseFloat($("defeatNumber").value);if(isNaN(v))return toast("ENTER DEFEAT POINTS");
+ total-=v;totalLoss+=v;update();toast("-"+fmt(v)+" DEFEAT POINTS");
+}
+function changeDay(){
+ let s=parseFloat($("startingPoint").value),date=new Date().toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"});
+ history.push({date,starting:isNaN(s)?0:s,total,percentage:$("percentageDisplay").textContent,profit:totalProfit,loss:totalLoss});
+ saveHistory();total=0;totalProfit=0;totalLoss=0;victoryOutputValue=null;victoryTotalAdd=null;
+ ["startingPoint","number1","number2","defeatNumber"].forEach(id=>$(id).value="");
+ $("victoryOutput").textContent="—";$("defeatOutput").textContent="—";localStorage.removeItem(KEY);update();render();toast("NEW DAY STARTED");
+}
+function clearHistory(){
+ if(!history.length)return toast("HISTORY IS EMPTY");
+ if(!confirm("Clear all daily history?"))return;
+ history=[];saveHistory();render();toast("DAY HISTORY CLEARED");
+}
+function deleteDay(i){if(!confirm("Delete this day?"))return;history.splice(i,1);saveHistory();render();toast("DAY DELETED")}
+
+function render(){
+ let p=0,l=0;history.forEach(x=>{p+=+x.profit||0;l+=+x.loss||0});
+ $("combinedProfit").textContent=fmt(p);$("combinedLoss").textContent=fmt(l);$("combinedNet").textContent=fmt(p-l);
+ let base=history.reduce((a,x)=>a+(+x.starting||0),0);$("combinedPercent").textContent=fmt(base?(p-l)/Math.abs(base)*100:0)+"%";
+ let list=$("historyList");list.innerHTML="";
+ if(!history.length){list.innerHTML='<div class="empty">No completed days yet.</div>';return}
+ [...history].reverse().forEach((x,r)=>{
+  let i=history.length-1-r,row=document.createElement("div");row.className="historyRow";row.style.animationDelay=r*.06+"s";
+  row.innerHTML=`<div><small class="label">Day</small><div>${x.date}</div></div>
+  <div><small class="label">Starting</small><div>${fmt(x.starting)}</div></div>
+  <div><small class="label">Total</small><div>${fmt(x.total)}</div></div>
+  <div><small class="label">Profit</small><div class="greenText">+${fmt(x.profit)}</div></div>
+  <div><small class="label">Loss</small><div class="redText">-${fmt(x.loss)}</div></div>
+  <button class="darkBtn" onclick="deleteDay(${i})">Delete</button>`;
+  list.appendChild(row);
+ })
+}
+function load(){
+ let d=JSON.parse(localStorage.getItem(KEY)||"null");if(!d)return;
+ total=+d.total||0;totalProfit=+d.totalProfit||0;totalLoss=+d.totalLoss||0;
+ $("startingPoint").value=d.startingPoint||"";$("number1").value=d.number1||"";$("number2").value=d.number2||"";$("defeatNumber").value=d.defeatNumber||"";
+ victoryOutputValue=d.victoryOutputValue??null;victoryTotalAdd=d.victoryTotalAdd??null;
+ $("victoryOutput").textContent=d.victoryOutput||"—";$("defeatOutput").textContent=d.defeatOutput||"—";
+}
+["startingPoint","number1","number2","defeatNumber"].forEach(id=>$(id).addEventListener("input",saveCurrent));
+load();update();render();
+</script>
+</body>
+</html>
